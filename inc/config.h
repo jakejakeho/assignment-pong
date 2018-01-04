@@ -39,7 +39,17 @@ public:
 		config.id = id;
 		return config;
 	}
-
+	static LcdTypewriter::Config GetWriterConfig(St7735r *lcd){
+		LcdTypewriter::Config config;
+		config.lcd = lcd;
+		return config;
+	}
+	static LcdConsole::Config GetConsoleConfig(St7735r *lcd){
+		LcdConsole::Config config;
+		config.lcd = lcd;
+		config.region = Lcd::Rect(0,0,128,160);
+		return config;
+	}
     static Joystick::Config GetJoystickConfig() {
         //TODO: finish it
     }

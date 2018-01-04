@@ -18,8 +18,6 @@
 #include <libsc/system.h>
 #include <libbase/misc_types.h>
 
-#include "debug.h"
-
 using std::vector;
 using std::function;
 
