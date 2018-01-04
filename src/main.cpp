@@ -22,6 +22,7 @@
 #include "libbase/k60/pit.h"
 #include "libsc/lcd_typewriter.h"
 #include "bluetooth.h"
+#include "comm.h"
 
 namespace libbase
 {
@@ -71,21 +72,21 @@ int main() {
     led2.SetEnable(1);
     led3.SetEnable(1);
 
-//  Bluetooth bt;
+    Bluetooth bt;
 
     Comm::Package pkg;
 
-//    bt.SetHandler([&led0,&led1,&led2,&led3,&bt,&pkg](Bluetooth::Package package){
-//    	pkg = package;
-//    	switch((int)package.type){
-//    	case Bluetooth::PkgType::kStart:
-//    		led0.Switch();
-//				break;
-//    	case Bluetooth::PkgType::kStartACK:
-//    		led1.Switch();
-//    		break;
-//    	}
-//    });
+    bt.SetHandler([&led0,&led1,&led2,&led3,&bt,&pkg](Bluetooth::Package package){
+    	pkg = package;
+    	switch((int)package.type){
+    	case Bluetooth::PkgType::kStart:
+    		led0.Switch();
+				break;
+    	case Bluetooth::PkgType::kStartACK:
+    		led1.Switch();
+    		break;
+    	}
+    });
 //    bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
 //    bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
 //    while(1){
