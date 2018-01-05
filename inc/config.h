@@ -54,10 +54,16 @@ public:
 	}
     static Joystick::Config GetJoystickConfig() {
         //TODO: finish it
+    	Joystick::Config config;
+    	// ADD!
+    	return config;
     }
 
     static St7735r::Config GetLcdConfig() {
         //TODO: finish it
+    	St7735r::Config config;
+    	// ADD!
+    	return config;
     }
 
     static JyMcuBt106::Config GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)> isr) {
@@ -73,7 +79,7 @@ public:
     	//TODO: finish it
     	Pit::Config pitConfig;
     	pitConfig.channel = 0;
-    	pitConfig.count = 75000*250; //job executed once per 250ms
+    	pitConfig.count = 75000*50; //job executed once per 50ms
     	pitConfig.isr = isr;
     	return pitConfig;
     }

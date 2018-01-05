@@ -62,10 +62,12 @@ int main() {
     Led led3(Config::GetLedConfig(3));
     pLed = &led0;
 
+
     St7735r lcd(Config::GetLcdConfig());
     LcdTypewriter writer(Config::GetWriterConfig(&lcd));
     LcdConsole console(Config::GetConsoleConfig(&lcd));
     lcd.SetRegion(Lcd::Rect(0,0,128,160));
+    writer.WriteString("YOU WIN!");
 
     led0.SetEnable(1);
     led1.SetEnable(1);
@@ -74,9 +76,10 @@ int main() {
 
     Bluetooth bt;
 
+
     Comm::Package pkg;
 
-    bt.SetHandler([&led0,&led1,&led2,&led3,&bt,&pkg](Bluetooth::Package package){
+    bt.SetHandler(std::function<void (Comm::Package)>([&led0,&led1,&led2,&led3,&bt,&pkg](Bluetooth::Package package){
     	pkg = package;
     	switch((int)package.type){
     	case Bluetooth::PkgType::kStart:
@@ -86,32 +89,32 @@ int main() {
     		led1.Switch();
     		break;
     	}
-    });
-//    bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
-//    bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
-//    while(1){
-//    	if(System::Time()%50==0){
-//			char c[10];
-//			lcd.SetRegion(Lcd::Rect(0,0,100,15));
-//			if(bt.IsTimerEnable()){
-//				writer.WriteString("timer enabled");
-//			}else{
-//				writer.WriteString("timer disabled");
-//			}
-//			lcd.SetRegion(Lcd::Rect(0,15,100,15));
-//			if(bt.IsWaitingACK()){
-//				writer.WriteString("waiting");
-//			}else{
-//				writer.WriteString("not waiting");
-//			}
-//			lcd.SetRegion(Lcd::Rect(0,30,100,15));
-//			sprintf(c,"size:%d",bt.queue.size());
-//			writer.WriteBuffer(c,10);
-//			lcd.SetRegion(Lcd::Rect(0,45,100,15));
-//			sprintf(c,"last:%d",bt.send_time);
-//			writer.WriteBuffer(c,10);
-//    	}
-//
-//    }
+    }));
+    bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
+    bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
+    while(1){
+    	if(System::Time()%50==0){
+			char c[10];
+			lcd.SetRegion(Lcd::Rect(0,0,100,15));
+			if(bt.IsTimerEnable()){
+				writer.WriteString("timer enabled");
+			}else{
+				writer.WriteString("timer disabled");
+			}
+			lcd.SetRegion(Lcd::Rect(0,15,100,15));
+			if(bt.IsWaitingACK()){
+				writer.WriteString("waiting");
+			}else{
+				writer.WriteString("not waiting");
+			}
+			lcd.SetRegion(Lcd::Rect(0,30,100,15));
+			sprintf(c,"size:%d!",bt.queue.size());
+			writer.WriteBuffer(c,10);
+			lcd.SetRegion(Lcd::Rect(0,45,100,15));
+			sprintf(c,"last:%d!",bt.send_time);
+			writer.WriteBuffer(c,10);
+    	}
+
+    }
     return 0;
 }

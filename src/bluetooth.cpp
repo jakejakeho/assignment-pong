@@ -6,16 +6,22 @@
  */
 #include "bluetooth.h"
 
-void isr(Pit *);
+void bluetoothSend(Pit *);
 bool bluetoothHandler(const Byte*, const size_t);
-void isr(libbase::k60::Pit *){
+void bluetoothSend(libbase::k60::Pit *){
 	return;
+}
+
+void Bluetooth::SendBuffer(const Byte *buff, const int &size){
+	if(this->m_bt.SendBuffer(buff, size)){
+		delete[] buff;
+	}
 }
 
 bool bluetoothHandler(const Byte*, const size_t){
 	return true;
 }
-Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>(bluetoothHandler))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>(isr))){}
+Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>(bluetoothHandler))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>(bluetoothSend))){}
 
 
 
@@ -30,6 +36,8 @@ void Bluetooth::EnableTimer(bool flag){
 		return;
 	}
 }
+
+
 
 
 
