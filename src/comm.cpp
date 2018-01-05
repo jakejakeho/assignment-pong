@@ -17,7 +17,47 @@ void Comm::SendPackage(const Package& pkg, bool need_ack){
 
 void Comm::SendFirst(){
 	this->send_time = libsc::System::Time();
-	SendPackage(queue[0]);
+	int size = 0;
+	switch(queue[0].type){
+		case Comm::PkgType::kStart:
+			size = 3;
+			break;
+		case Comm::PkgType::kStartACK:
+			size = 3;
+			break;
+		case Comm::PkgType::kMasterPlatform:
+			size = 4;
+			break;
+		case Comm::PkgType::kMasterPlatformACK:
+			size = 3;
+			break;
+		case Comm::PkgType::kSlavePlatform:
+			size = 4;
+			break;
+		case Comm::PkgType::kSlavePlatformACK:
+			size = 3;
+			break;
+		case Comm::PkgType::kReflection:
+			size = 5;
+			break;
+		case Comm::PkgType::kReflectionACK:
+			size = 3;
+			break;
+		case Comm::PkgType::kLocation:
+			size = 5;
+			break;
+		case Comm::PkgType::kLocationACK:
+			size = 3;
+			break;
+		case Comm::PkgType::kResult:
+			size = 4;
+			break;
+		case Comm::PkgType::kResultACK:
+			size = 3;
+			break;
+		}
+	Byte* buff = new Byte[queue[0].type]
+	Sendbuffer();
 	if((int)queue[0].type % 2 == 0){
 		this->is_waiting_ack = true;
 	}
