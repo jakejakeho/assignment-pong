@@ -13,10 +13,10 @@ void Bluetooth::SendBuffer(const Byte *buff, const int &size){
 }
 
 Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>([this](const Byte* buff, const size_t size) -> bool{
-	this->SendBuffer(buff,size);
+	this->Listener(buff,size);
 	return true;
 }))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>([this](Pit*){
-	if(this->is_timer_enabled){
+	if(this->IsTimerEnable()){
 		this->SendFirst();
 	}
 }))){

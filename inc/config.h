@@ -79,7 +79,7 @@ public:
     	//TODO: finish it
     	Pit::Config pitConfig;
     	pitConfig.channel = 0;
-    	pitConfig.count = 75000*50; //job executed once per 50ms
+    	pitConfig.count = 75000*10; //job executed once per 10ms
     	pitConfig.isr = isr;
     	return pitConfig;
     }

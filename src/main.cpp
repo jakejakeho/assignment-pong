@@ -84,7 +84,8 @@ int main() {
     	switch((int)package.type){
     	case Bluetooth::PkgType::kStart:
     		led0.Switch();
-				break;
+    		bt.SendPackage({0,Bluetooth::PkgType::kStartACK,{}});
+			break;
     	case Bluetooth::PkgType::kStartACK:
     		led1.Switch();
     		break;

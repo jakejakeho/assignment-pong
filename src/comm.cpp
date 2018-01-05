@@ -73,31 +73,30 @@ void Comm::BuildBufferPackage(){
 		break;
 	case Comm::PkgType::kStartACK:
 		pkg.data = {};
-		is_waiting_ack = false;
 		break;
 	case Comm::PkgType::kMasterPlatform:
 		pkg.data = {buffer[2]};
 		break;
 	case Comm::PkgType::kMasterPlatformACK:
 		pkg.data = {};
-		is_waiting_ack = false;
 		break;
 	case Comm::PkgType::kSlavePlatform:
 		pkg.data = {buffer[2]};
+		break;
+	case Comm::PkgType::kSlavePlatformACK:
+		pkg.data = {};
 		break;
 	case Comm::PkgType::kReflection:
 		pkg.data = {buffer[2],buffer[3]};
 		break;
 	case Comm::PkgType::kReflectionACK:
 		pkg.data = {};
-		is_waiting_ack = false;
 		break;
 	case Comm::PkgType::kLocation:
 		pkg.data = {buffer[2], buffer[3]};
 		break;
 	case Comm::PkgType::kLocationACK:
 		pkg.data = {};
-		is_waiting_ack = false;
 		break;
 	case Comm::PkgType::kResult:
 		pkg.data = {buffer[2]};
@@ -108,6 +107,7 @@ void Comm::BuildBufferPackage(){
 		break;
 	}
 	buffer.clear();
+	this->Handler(pkg);
 }
 
 bool Comm::Listener(const Byte* buff, const size_t size){
