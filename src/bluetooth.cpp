@@ -6,24 +6,20 @@
  */
 #include "bluetooth.h"
 
-void bluetoothSend(Pit *);
-bool bluetoothHandler(const Byte*, const size_t);
-void bluetoothSend(Pit *){
-	return;
-}
-
 void Bluetooth::SendBuffer(const Byte *buff, const int &size){
 	if(this->m_bt.SendBuffer(buff, size)){
 		delete[] buff;
 	}
 }
 
-bool bluetoothHandler(const Byte* buff, const size_t size){
-
-}
-
-
-Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>(bluetoothSend))){
+Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>([this](const Byte* buff, const size_t size) -> bool{
+	this->SendBuffer(buff,size);
+	return true;
+}))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>([this](Pit*){
+	if(this->is_timer_enabled){
+		this->SendFirst();
+	}
+}))){
 	this->EnableTimer(false);
 }
 

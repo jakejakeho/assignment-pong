@@ -13,6 +13,9 @@ Comm::~Comm(){}
 void Comm::SendPackage(const Package& pkg, bool need_ack){
 	queue.push_back(pkg);
 	SendFirst();
+	if(need_ack){
+		is_waiting_ack = true;
+	}
 }
 
 void Comm::SendFirst(){
@@ -56,11 +59,8 @@ void Comm::SendFirst(){
 			size = 3;
 			break;
 		}
-	Byte* buff = new Byte[queue[0].type]
-	Sendbuffer();
-	if((int)queue[0].type % 2 == 0){
-		this->is_waiting_ack = true;
-	}
+	Byte* buff = new Byte[size];
+	SendBuffer(buff,size);
 }
 
 void Comm::BuildBufferPackage(){
@@ -73,12 +73,14 @@ void Comm::BuildBufferPackage(){
 		break;
 	case Comm::PkgType::kStartACK:
 		pkg.data = {};
+		is_waiting_ack = false;
 		break;
 	case Comm::PkgType::kMasterPlatform:
 		pkg.data = {buffer[2]};
 		break;
 	case Comm::PkgType::kMasterPlatformACK:
 		pkg.data = {};
+		is_waiting_ack = false;
 		break;
 	case Comm::PkgType::kSlavePlatform:
 		pkg.data = {buffer[2]};
@@ -88,20 +90,24 @@ void Comm::BuildBufferPackage(){
 		break;
 	case Comm::PkgType::kReflectionACK:
 		pkg.data = {};
+		is_waiting_ack = false;
 		break;
 	case Comm::PkgType::kLocation:
 		pkg.data = {buffer[2], buffer[3]};
 		break;
 	case Comm::PkgType::kLocationACK:
 		pkg.data = {};
+		is_waiting_ack = false;
 		break;
 	case Comm::PkgType::kResult:
 		pkg.data = {buffer[2]};
 		break;
 	case Comm::PkgType::kResultACK:
 		pkg.data = {};
+		is_waiting_ack = false;
 		break;
 	}
+	buffer.clear();
 }
 
 bool Comm::Listener(const Byte* buff, const size_t size){
