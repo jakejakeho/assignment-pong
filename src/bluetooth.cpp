@@ -8,7 +8,7 @@
 
 void bluetoothSend(Pit *);
 bool bluetoothHandler(const Byte*, const size_t);
-void bluetoothSend(libbase::k60::Pit *){
+void bluetoothSend(Pit *){
 	return;
 }
 
@@ -18,9 +18,13 @@ void Bluetooth::SendBuffer(const Byte *buff, const int &size){
 	}
 }
 
-Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>(bluetoothHandler))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>(bluetoothSend))){
-	this->EnableTimer(true);
+bool bluetoothHandler(const Byte* buff, const size_t size){
 
+}
+
+
+Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>(bluetoothSend))){
+	this->EnableTimer(false);
 }
 
 

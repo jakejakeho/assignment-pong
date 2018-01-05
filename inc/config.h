@@ -62,7 +62,7 @@ public:
     static St7735r::Config GetLcdConfig() {
         //TODO: finish it
     	St7735r::Config config;
-    	// ADD!
+    	config.fps = 20;
     	return config;
     }
 
