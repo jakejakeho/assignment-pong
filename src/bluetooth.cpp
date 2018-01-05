@@ -5,17 +5,18 @@
  *      Author: Jake
  */
 #include "bluetooth.h"
-#include "config.h"
-void bluetoothSend(Pit *);
+
+void isr(Pit *);
 bool bluetoothHandler(const Byte*, const size_t);
-Bluetooth::Bluetooth():m_bt(JyMcuBt106(Config::GetBluetoothConfig(bluetoothHandler))),m_pit(Pit(Config::GetBluetoothPitConfig(bluetoothSend))){}
-void bluetoothSend(Pit *){
+void isr(libbase::k60::Pit *){
 	return;
 }
 
 bool bluetoothHandler(const Byte*, const size_t){
 	return true;
 }
+Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>(bluetoothHandler))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>(isr))){}
+
 
 
 void Bluetooth::EnableTimer(bool flag){
