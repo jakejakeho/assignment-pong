@@ -79,7 +79,7 @@ int main() {
 
     Comm::Package pkg;
 
-    bt.SetHandler(std::function<void (Comm::Package)>([&led0,&led1,&led2,&led3,&bt,&pkg](Bluetooth::Package package){
+    bt.SetHandler(Bluetooth::PackageHandler([&led0,&led1,&led2,&led3,&bt,&pkg](Bluetooth::Package package){
     	pkg = package;
     	switch((int)package.type){
     	case Bluetooth::PkgType::kStart:

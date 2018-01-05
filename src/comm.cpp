@@ -6,7 +6,7 @@
  */
 #include "comm.h"
 
-Comm::Comm():send_time(0),is_waiting_ack(false){}
+Comm::Comm():send_time(0),is_waiting_ack(false)){}
 
 Comm::~Comm(){}
 
@@ -14,6 +14,7 @@ void Comm::SendPackage(const Package& pkg, bool need_ack){
 	this->queue.push_back(pkg);
 	this->send_time = libsc::System::Time();
 	if(need_ack){
+		is_waiting_ack = true;
 		while(this->is_waiting_ack){
 			switch((int)this->queue[0].type){
 				case PkgType::kStart:
