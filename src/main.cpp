@@ -62,17 +62,15 @@ int main() {
     Led led3(Config::GetLedConfig(3));
     pLed = &led0;
 
+    led0.SetEnable(1);
+    led1.SetEnable(1);
+    led2.SetEnable(1);
+    led3.SetEnable(1);
 
     St7735r lcd(Config::GetLcdConfig());
     LcdTypewriter writer(Config::GetWriterConfig(&lcd));
     LcdConsole console(Config::GetConsoleConfig(&lcd));
     lcd.SetRegion(Lcd::Rect(0,0,128,160));
-    writer.WriteString("YOU WIN!");
-
-    led0.SetEnable(1);
-    led1.SetEnable(1);
-    led2.SetEnable(1);
-    led3.SetEnable(1);
 
     Bluetooth bt;
 

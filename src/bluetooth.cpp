@@ -16,9 +16,9 @@ Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const 
 	this->Listener(buff,size);
 	return true;
 }))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>([this](Pit*){
-	if(this->IsTimerEnable()){
-		this->SendFirst();
-	}
+//	if(this->IsTimerEnable()){
+//		this->SendFirst();
+//	}
 }))){
 	this->EnableTimer(false);
 }

@@ -5,7 +5,7 @@
  *      Author: Jake
  */
 #include "comm.h"
-
+#include <cstring>
 Comm::Comm():send_time(0),is_waiting_ack(false){}
 
 Comm::~Comm(){}
@@ -21,9 +21,14 @@ void Comm::SendPackage(const Package& pkg, bool need_ack){
 void Comm::SendFirst(){
 	this->send_time = libsc::System::Time();
 	int size = 0;
+	Byte* buff = nullptr;
 	switch(queue[0].type){
 		case Comm::PkgType::kStart:
 			size = 3;
+			buff = new Byte[size];
+			std::memcpy(&buff[0], 0x00, 1);
+			std::memcpy(&buff[1], &(Byte)Comm::PkgType::kStart, 1);
+			std::memcpy(&buff[2], &(Byte)Comm::BitConsts::kSTART, 1);
 			break;
 		case Comm::PkgType::kStartACK:
 			size = 3;
@@ -59,8 +64,9 @@ void Comm::SendFirst(){
 			size = 3;
 			break;
 		}
-	Byte* buff = new Byte[size];
-	SendBuffer(buff,size);
+	if(buff != nullptr)
+		SendBuffer(buff,size);
+		queue.clear();
 }
 
 void Comm::BuildBufferPackage(){
