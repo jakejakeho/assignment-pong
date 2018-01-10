@@ -89,6 +89,7 @@ int main() {
 			break;
     	case Bluetooth::PkgType::kStartACK:
     		led1.Switch();
+    		Bluetooth::is_waiting_ack = false;
     		break;
     	}
     }));

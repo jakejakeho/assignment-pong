@@ -20,6 +20,8 @@ void Comm::SendFirst(){
 	int size = 0;
 	Byte* buff = nullptr;
 	Byte temp;
+	if(queue.size == 0)
+		return;
 	switch(queue[0].type){
 		case Comm::PkgType::kStart:
 			size = 3;
@@ -30,6 +32,7 @@ void Comm::SendFirst(){
 			std::memcpy(&buff[1], &temp, 1);
 			temp = Comm::BitConsts::kSTART;
 			std::memcpy(&buff[2], &temp, 1);
+			is_waiting_ack = true;
 			break;
 		case Comm::PkgType::kStartACK:
 			size = 3;
@@ -43,33 +46,40 @@ void Comm::SendFirst(){
 			break;
 		case Comm::PkgType::kMasterPlatform:
 			size = 4;
+			is_waiting_ack = true;
 			break;
 		case Comm::PkgType::kMasterPlatformACK:
 			size = 3;
 			break;
 		case Comm::PkgType::kSlavePlatform:
 			size = 4;
+			is_waiting_ack = true;
 			break;
 		case Comm::PkgType::kSlavePlatformACK:
 			size = 3;
 			break;
 		case Comm::PkgType::kReflection:
 			size = 5;
+			is_waiting_ack = true;
 			break;
 		case Comm::PkgType::kReflectionACK:
 			size = 3;
 			break;
 		case Comm::PkgType::kLocation:
 			size = 5;
+			is_waiting_ack = true;
 			break;
 		case Comm::PkgType::kLocationACK:
 			size = 3;
+			is_waiting_ack = true;
 			break;
 		case Comm::PkgType::kResult:
 			size = 4;
+			is_waiting_ack = true;
 			break;
 		case Comm::PkgType::kResultACK:
 			size = 3;
+			is_waiting_ack = true;
 			break;
 		}
 	SendBuffer(buff,size);
