@@ -7,18 +7,18 @@
 #include "bluetooth.h"
 
 void Bluetooth::SendBuffer(const Byte *buff, const int &size){
-	if(this->m_bt.SendBuffer(buff, size)){
-		delete[] buff;
-	}
+	this->m_bt.SendBuffer(buff, size);
+	delete[] buff;
 }
 
 Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>([this](const Byte* buff, const size_t size) -> bool{
 	this->Listener(buff,size);
 	return true;
 }))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>([this](Pit*){
-//	if(this->IsTimerEnable()){
-//		this->SendFirst();
-//	}
+	if(this->IsTimerEnable()){
+		//this->SendFirst();
+		int a;
+	}
 }))){
 	this->EnableTimer(false);
 }

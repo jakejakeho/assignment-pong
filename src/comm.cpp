@@ -13,25 +13,33 @@ Comm::~Comm(){}
 void Comm::SendPackage(const Package& pkg, bool need_ack){
 	queue.push_back(pkg);
 	SendFirst();
-	if(need_ack){
-		is_waiting_ack = true;
-	}
 }
 
 void Comm::SendFirst(){
 	this->send_time = libsc::System::Time();
 	int size = 0;
 	Byte* buff = nullptr;
+	Byte temp;
 	switch(queue[0].type){
 		case Comm::PkgType::kStart:
 			size = 3;
 			buff = new Byte[size];
-			std::memcpy(&buff[0], 0x00, 1);
-			std::memcpy(&buff[1], &(Byte)Comm::PkgType::kStart, 1);
-			std::memcpy(&buff[2], &(Byte)Comm::BitConsts::kSTART, 1);
+			temp = 0x00;
+			std::memcpy(&buff[0], &temp, 1);
+			temp = Comm::PkgType::kStart;
+			std::memcpy(&buff[1], &temp, 1);
+			temp = Comm::BitConsts::kSTART;
+			std::memcpy(&buff[2], &temp, 1);
 			break;
 		case Comm::PkgType::kStartACK:
 			size = 3;
+			buff = new Byte[size];
+			temp = 0x00;
+			std::memcpy(&buff[0], &temp, 1);
+			temp = Comm::PkgType::kStartACK;
+			std::memcpy(&buff[1], &temp, 1);
+			temp = Comm::BitConsts::kACK;
+			std::memcpy(&buff[2], &temp, 1);
 			break;
 		case Comm::PkgType::kMasterPlatform:
 			size = 4;
@@ -64,15 +72,14 @@ void Comm::SendFirst(){
 			size = 3;
 			break;
 		}
-	if(buff != nullptr)
-		SendBuffer(buff,size);
-		queue.clear();
+	SendBuffer(buff,size);
+	queue.clear();
 }
 
 void Comm::BuildBufferPackage(){
 	Package pkg;
-	pkg.frame_id = buffer[0];
-	pkg.type = (Comm::PkgType)buffer[1];
+	std::memcpy(&pkg.frame_id, &buffer[0], 1);
+	std::memcpy(&pkg.type, &buffer[1], 1);
 	switch((int)pkg.type){
 	case Comm::PkgType::kStart:
 		pkg.data = {};
@@ -87,7 +94,7 @@ void Comm::BuildBufferPackage(){
 		pkg.data = {};
 		break;
 	case Comm::PkgType::kSlavePlatform:
-		pkg.data = {buffer[2]};
+		pkg.data = {};
 		break;
 	case Comm::PkgType::kSlavePlatformACK:
 		pkg.data = {};
@@ -121,7 +128,9 @@ bool Comm::Listener(const Byte* buff, const size_t size){
 		Byte temp = buff[i];
 		buffer.push_back(temp);
 	}
-	this->BuildBufferPackage();
+	Byte lastElement = buffer[buffer.size() - 1];
+	if(lastElement == Comm::BitConsts::kACK || lastElement == Comm::BitConsts::kEND || lastElement == Comm::BitConsts::kSTART)
+		this->BuildBufferPackage();
 	return true;
 }
 

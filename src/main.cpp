@@ -67,6 +67,7 @@ int main() {
     led2.SetEnable(1);
     led3.SetEnable(1);
 
+
     St7735r lcd(Config::GetLcdConfig());
     LcdTypewriter writer(Config::GetWriterConfig(&lcd));
     LcdConsole console(Config::GetConsoleConfig(&lcd));
@@ -74,11 +75,13 @@ int main() {
 
     Bluetooth bt;
 
+    int counter = 0;
 
     Comm::Package pkg;
 
-    bt.SetHandler(Bluetooth::PackageHandler([&led0,&led1,&led2,&led3,&bt,&pkg](Bluetooth::Package package){
+    bt.SetHandler(Bluetooth::PackageHandler([&led0,&led1,&led2,&led3,&bt,&pkg,&counter](Bluetooth::Package package){
     	pkg = package;
+    	counter++;
     	switch((int)package.type){
     	case Bluetooth::PkgType::kStart:
     		led0.Switch();
@@ -90,7 +93,7 @@ int main() {
     	}
     }));
     bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
-    bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
+    //bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
     while(1){
     	if(System::Time()%50==0){
 			char c[10];
@@ -111,6 +114,9 @@ int main() {
 			writer.WriteBuffer(c,10);
 			lcd.SetRegion(Lcd::Rect(0,45,100,15));
 			sprintf(c,"last:%d!",bt.send_time);
+			writer.WriteBuffer(c,10);
+			lcd.SetRegion(Lcd::Rect(0,60,100,15));
+			sprintf(c,"counter:%d!",counter);
 			writer.WriteBuffer(c,10);
     	}
 
