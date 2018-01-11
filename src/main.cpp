@@ -89,9 +89,11 @@ int main() {
 			break;
     	case Bluetooth::PkgType::kStartACK:
     		led1.Switch();
-    		Bluetooth::is_waiting_ack = false;
+    		Comm* temp = &bt;
+    		temp->stopWait();
     		break;
     	}
+
     }));
     bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
     //bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
@@ -111,7 +113,7 @@ int main() {
 				writer.WriteString("not waiting");
 			}
 			lcd.SetRegion(Lcd::Rect(0,30,100,15));
-			sprintf(c,"size:%d!",bt.queue.size());
+			sprintf(c,"size:%d!",(int)bt.queue.size());
 			writer.WriteBuffer(c,10);
 			lcd.SetRegion(Lcd::Rect(0,45,100,15));
 			sprintf(c,"last:%d!",bt.send_time);

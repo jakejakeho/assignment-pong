@@ -13,6 +13,7 @@
 
 #include <vector>
 #include <functional>
+#include <cstring>
 
 #include <libbase/k60/mcg.h>
 #include <libsc/system.h>
@@ -100,6 +101,8 @@ public:
 	//some variable getters
 	bool IsWaitingACK(){return is_waiting_ack;}
 
+	void startWait(){is_waiting_ack = true;};
+	void stopWait(){is_waiting_ack = false;};
 	//tx variables
 	vector<Package> queue;	//pending send package
 	int send_time;			//last send time

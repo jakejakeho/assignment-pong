@@ -12,6 +12,7 @@
 
 #include <vector>
 #include <functional>
+#include <cstring>
 
 #include <libbase/k60/mcg.h>
 #include <libsc/system.h>
@@ -40,6 +41,7 @@ private:
     Pit m_pit;
 
     bool is_timer_enabled=false;
+    int numberOfRetry = 0;
 
     //implement enable timer
     void EnableTimer(bool flag);

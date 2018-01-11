@@ -5,12 +5,13 @@
  *      Author: Jake
  */
 #include "comm.h"
-#include <cstring>
 Comm::Comm():send_time(0),is_waiting_ack(false){}
 
 Comm::~Comm(){}
 
 void Comm::SendPackage(const Package& pkg, bool need_ack){
+	if(need_ack && !is_waiting_ack)
+		is_waiting_ack = true;
 	queue.push_back(pkg);
 	SendFirst();
 }
@@ -20,7 +21,7 @@ void Comm::SendFirst(){
 	int size = 0;
 	Byte* buff = nullptr;
 	Byte temp;
-	if(queue.size == 0)
+	if(queue.size() == 0)
 		return;
 	switch(queue[0].type){
 		case Comm::PkgType::kStart:
@@ -83,7 +84,7 @@ void Comm::SendFirst(){
 			break;
 		}
 	SendBuffer(buff,size);
-	queue.clear();
+	queue.erase(queue.begin());
 }
 
 void Comm::BuildBufferPackage(){
