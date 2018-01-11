@@ -99,6 +99,7 @@ int main() {
     //bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
     while(1){
     	if(System::Time()%50==0){
+    	    bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
 			char c[10];
 			lcd.SetRegion(Lcd::Rect(0,0,100,15));
 			if(bt.IsTimerEnable()){
