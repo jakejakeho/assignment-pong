@@ -7,7 +7,7 @@
 
 
 #include "sprite.h"
-#include "game_config.h"
+#include "config.h"
 
 /**
  * Platform Sprite for the Pong game.
@@ -19,6 +19,7 @@ public:
     /**
      * Moves the platform one step to the left.
      */
+
     void moveLeft();
 
     /**

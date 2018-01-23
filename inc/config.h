@@ -21,6 +21,7 @@
 #include "libsc/k60/jy_mcu_bt_106.h"
 #include "libbase/k60/pit.h"
 #include "libbase/k60/uart.h"
+#include "sprite.h"
 
 using libsc::Led;
 using libsc::Lcd;
@@ -82,6 +83,18 @@ public:
     	pitConfig.count = 75000*10; //job executed once per 10ms
     	pitConfig.isr = isr;
     	return pitConfig;
+    }
+
+    static Sprite::Config GetSpriteConfig(uint16_t fg, uint16_t bg, unsigned int width, unsigned int height, int x, int y, libsc::Lcd* pLcd){
+    	Sprite::Config config;
+    	config.fg_color = fg;
+    	config.bg_color = bg;
+    	config.height = height;
+    	config.width = width;
+    	config.x = x;
+   		config.y = y;
+   		config.pLcd = pLcd;
+   		return config;
     }
 };
 

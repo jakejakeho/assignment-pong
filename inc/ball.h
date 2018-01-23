@@ -7,7 +7,7 @@
 
 
 #include "sprite.h"
-#include "game_config.h"
+
 
 /**
  * Ball sprite for the Pong game.

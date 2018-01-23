@@ -95,6 +95,7 @@ int main() {
     	}
 
     }));
+    Config::
     bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
     //bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
     while(1){
