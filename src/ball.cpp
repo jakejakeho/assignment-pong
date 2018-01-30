@@ -6,6 +6,7 @@
  */
 
 #include "ball.h"
+#include "config.h"
 using namespace std;
 
 void Ball::setVelocity(int v_x,int v_y){
@@ -14,16 +15,15 @@ void Ball::setVelocity(int v_x,int v_y){
 }
 
 void Ball::move(){
+	clean();
 	this->m_position = Coord(m_position.x + m_v_x, m_position.y + m_v_y);
 }
 
 void Ball::render(){
-	clean();
 	draw();
 }
 
 void Ball::rebound(){
-Config::
 }
 
-Ball::Ball(libsc::Lcd* pLcd):Sprite(Config::GetSpriteConfig(0xfd20,0xffff,5,5,10,10,pLcd)){}
+Ball::Ball(libsc::Lcd* pLcd):Sprite(myConfig::GetSpriteConfig(0xfd20,0xffff,5,5,10,10,pLcd)){}

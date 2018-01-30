@@ -23,6 +23,8 @@
 #include "libsc/lcd_typewriter.h"
 #include "bluetooth.h"
 #include "comm.h"
+#include "ball.h"
+#include "platform.h"
 
 namespace libbase
 {
@@ -56,10 +58,10 @@ char *str = "";
 int main() {
     System::Init();
 
-    Led led0(Config::GetLedConfig(0));
-    Led led1(Config::GetLedConfig(1));
-    Led led2(Config::GetLedConfig(2));
-    Led led3(Config::GetLedConfig(3));
+    Led led0(myConfig::GetLedConfig(0));
+    Led led1(myConfig::GetLedConfig(1));
+    Led led2(myConfig::GetLedConfig(2));
+    Led led3(myConfig::GetLedConfig(3));
     pLed = &led0;
 
     led0.SetEnable(1);
@@ -68,14 +70,28 @@ int main() {
     led3.SetEnable(1);
 
 
-    St7735r lcd(Config::GetLcdConfig());
-    LcdTypewriter writer(Config::GetWriterConfig(&lcd));
-    LcdConsole console(Config::GetConsoleConfig(&lcd));
+    St7735r lcd(myConfig::GetLcdConfig());
+    LcdTypewriter writer(myConfig::GetWriterConfig(&lcd));
+    LcdConsole console(myConfig::GetConsoleConfig(&lcd));
     lcd.SetRegion(Lcd::Rect(0,0,128,160));
+    lcd.FillColor(lcd.kWhite);
 
     Bluetooth bt;
 
     int counter = 0;
+    uint32_t lastTime = 0;
+
+    Ball ball(&lcd);
+    Platform platform(&lcd);
+    Joystick js(myConfig::GetJoystickConfig(Joystick::Listener([&platform](const uint8_t id, const Joystick::State state){
+    	if(state == Joystick::State::kLeft){
+    		platform.moveLeft();
+       		platform.render();
+    	}else if(state == Joystick::State::kRight){
+    		platform.moveRight();
+       		platform.render();
+    	}
+    })));
 
     Comm::Package pkg;
 
@@ -95,36 +111,22 @@ int main() {
     	}
 
     }));
-    Config::
     bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
     //bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
+    platform.render();
     while(1){
-    	if(System::Time()%10==0){
-    	    bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
-			char c[10];
-			lcd.SetRegion(Lcd::Rect(0,0,100,15));
-			if(bt.IsTimerEnable()){
-				writer.WriteString("timer enabled");
-			}else{
-				writer.WriteString("timer disabled");
-			}
-			lcd.SetRegion(Lcd::Rect(0,15,100,15));
-			if(bt.IsWaitingACK()){
-				writer.WriteString("waiting");
-			}else{
-				writer.WriteString("not waiting");
-			}
-			lcd.SetRegion(Lcd::Rect(0,30,100,15));
-			sprintf(c,"size:%d!",(int)bt.queue.size());
-			writer.WriteBuffer(c,10);
-			lcd.SetRegion(Lcd::Rect(0,45,100,15));
-			sprintf(c,"last:%d!",bt.send_time);
-			writer.WriteBuffer(c,10);
-			lcd.SetRegion(Lcd::Rect(0,60,100,15));
-			sprintf(c,"counter:%d!",counter);
-			writer.WriteBuffer(c,10);
+    	if(System::Time() != lastTime){
+    		lastTime = System::Time();
+    		if(lastTime % 50 == 0){
+    			bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
+    //			char c[10];
+	//			lcd.SetRegion(Lcd::Rect(0,0,100,15));
+	//			sprintf(c,"size:%d!",(int)bt.queue.size());
+	//			writer.WriteBuffer(c,10);
+	    	    ball.move();
+	    	    ball.render();
+    		}
     	}
-
     }
     return 0;
 }

@@ -34,7 +34,7 @@ using libsc::k60::JyMcuBt106;
 using libbase::k60::Pit;
 using libbase::k60::Uart;
 
-class Config{
+class myConfig{
 public:
 
 	static Led::Config GetLedConfig(int id){
@@ -53,9 +53,13 @@ public:
 		config.region = Lcd::Rect(0,0,128,160);
 		return config;
 	}
-    static Joystick::Config GetJoystickConfig() {
+    static Joystick::Config GetJoystickConfig(Joystick::Listener isr) {
         //TODO: finish it
     	Joystick::Config config;
+    	config.id = 0;
+    	config.is_active_low = true;
+    	config.dispatcher = isr;
+
     	// ADD!
     	return config;
     }

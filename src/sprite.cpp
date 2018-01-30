@@ -12,7 +12,7 @@ Sprite::Sprite(Config config):m_bg_color(config.bg_color),m_fg_color(config.fg_c
 
 void Sprite::clean(){
 	this->m_pLcd->SetRegion(libsc::Lcd::Rect(m_position.x,m_position.y,m_width,m_height));
-	this->m_pLcd->ClearRegion();
+	this->m_pLcd->FillColor(0xffff);
 }
 
 void Sprite::draw(){

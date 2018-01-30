@@ -15,10 +15,10 @@ void Bluetooth::SendBuffer(const Byte *buff, const int &size){
 	delete[] buff;
 }
 
-Bluetooth::Bluetooth():m_bt(Config::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>([this](const Byte* buff, const size_t size) -> bool{
+Bluetooth::Bluetooth():m_bt(myConfig::GetBluetoothConfig(std::function<bool(const Byte *data, const size_t size)>([this](const Byte* buff, const size_t size) -> bool{
 	this->EnableTimer(!this->Listener(buff,size));
 	return true;
-}))), m_pit(Config::GetBluetoothPitConfig(std::function<void(Pit*)>([this](Pit*){
+}))), m_pit(myConfig::GetBluetoothPitConfig(std::function<void(Pit*)>([this](Pit*){
 	if(this->IsTimerEnable() && numberOfRetry <= 4){
 		this->SendFirst();
 		numberOfRetry++;
