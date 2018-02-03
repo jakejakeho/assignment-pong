@@ -19,7 +19,7 @@ Bluetooth::Bluetooth():m_bt(myConfig::GetBluetoothConfig(std::function<bool(cons
 	this->EnableTimer(!this->Listener(buff,size));
 	return true;
 }))), m_pit(myConfig::GetBluetoothPitConfig(std::function<void(Pit*)>([this](Pit*){
-	if(this->IsTimerEnable() && numberOfRetry <= 4){
+	if(this->is_waiting_ack && numberOfRetry <= 4){
 		this->SendFirst();
 		numberOfRetry++;
 	}else if (!this->IsTimerEnable()){

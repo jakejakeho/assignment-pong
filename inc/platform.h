@@ -14,7 +14,7 @@
  */
 class Platform: public Sprite {
 public:
-    explicit Platform(libsc::Lcd* pLcd);
+    explicit Platform(libsc::Lcd* pLcd, bool);
 
     /**
      * Moves the platform one step to the left.

@@ -26,7 +26,7 @@ public:
     /**
      * Calculate movements for the next frame.
      */
-    void move();
+    void move(int, int);
 
     /**
      * Renders the ball.
@@ -38,7 +38,7 @@ private:
     /**
      * Velocity in X direction of the ball in pixels.
      */
-    int m_v_x = 0;
+    int m_v_x = -4;
 
     /**
      * Velocity in Y direction of the ball in pixels.
@@ -48,7 +48,7 @@ private:
     /**
      * Executes rebound logic.
      */
-    void rebound();
+    void rebound(int, int);
 };
 
 

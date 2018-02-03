@@ -25,6 +25,7 @@
 #include "comm.h"
 #include "ball.h"
 #include "platform.h"
+#include "score.h"
 
 namespace libbase
 {
@@ -55,6 +56,7 @@ bool Listener(const unsigned char*, const unsigned int){
 
 char *str = "";
 
+
 int main() {
     System::Init();
 
@@ -69,7 +71,6 @@ int main() {
     led2.SetEnable(1);
     led3.SetEnable(1);
 
-
     St7735r lcd(myConfig::GetLcdConfig());
     LcdTypewriter writer(myConfig::GetWriterConfig(&lcd));
     LcdConsole console(myConfig::GetConsoleConfig(&lcd));
@@ -80,51 +81,80 @@ int main() {
 
     int counter = 0;
     uint32_t lastTime = 0;
+    bool isMaster = false;
+    bool isSlave = false;
+
+    char mode = 'M';
 
     Ball ball(&lcd);
-    Platform platform(&lcd);
-    Joystick js(myConfig::GetJoystickConfig(Joystick::Listener([&platform](const uint8_t id, const Joystick::State state){
-    	if(state == Joystick::State::kLeft){
-    		platform.moveLeft();
-       		platform.render();
-    	}else if(state == Joystick::State::kRight){
-    		platform.moveRight();
-       		platform.render();
+    Platform enemyPlatform(&lcd, true);
+    Platform myPlatform(&lcd, false);
+    Score enemyScore(&lcd, true);
+    Score myScore(&lcd, false);
+    Joystick js(myConfig::GetJoystickConfig(Joystick::Listener([&isMaster, &isSlave,&bt,&myPlatform, &mode](const uint8_t id, const Joystick::State state){
+    	if(state == Joystick::State::kLeft && mode == 'M'){
+    		mode = 'L';
+    	}else if(state == Joystick::State::kRight && mode == 'M'){
+    		mode = 'R';
+    	}else if((state == Joystick::State::kLeft && mode == 'R') || (state == Joystick::State::kRight && mode == 'L')){
+    		mode = 'M';
+    	}else if(state == Joystick::State::kSelect && !isSlave && !isMaster){
+    		isMaster = true;
+    		bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
+    		Comm* temp = &bt;
+    		temp->startWait();
     	}
     })));
 
     Comm::Package pkg;
 
-    bt.SetHandler(Bluetooth::PackageHandler([&led0,&led1,&led2,&led3,&bt,&pkg,&counter](Bluetooth::Package package){
+    bt.SetHandler(Bluetooth::PackageHandler([&isMaster,&isSlave,&led0,&led1,&led2,&led3,&bt,&pkg,&counter](Bluetooth::Package package){
     	pkg = package;
     	counter++;
     	switch((int)package.type){
     	case Bluetooth::PkgType::kStart:
-    		led0.Switch();
-    		bt.SendPackage({0,Bluetooth::PkgType::kStartACK,{}});
+    		if(!isSlave && !isMaster){
+    			led0.Switch();
+    			bt.SendPackage({0,Bluetooth::PkgType::kStartACK,{}});
+    			isSlave = true;
+    		}
 			break;
     	case Bluetooth::PkgType::kStartACK:
-    		led1.Switch();
-    		Comm* temp = &bt;
-    		temp->stopWait();
+    		if(isMaster){
+    			led1.Switch();
+    			Comm* temp = &bt;
+    			temp->stopWait();
+    			if(queue.size() > 0)
+    				queue.erase(queue.begin());
+    		}
     		break;
     	}
-
     }));
-    bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
-    //bt.SendPackage({0,Bluetooth::PkgType::kLocation,{1,2}});
-    platform.render();
+    enemyPlatform.render();
+    myPlatform.render();
+    myScore.addScore();
+    enemyScore.addScore();
     while(1){
     	if(System::Time() != lastTime){
     		lastTime = System::Time();
     		if(lastTime % 50 == 0){
-    			bt.SendPackage({0,Bluetooth::PkgType::kStart,{}});
     //			char c[10];
 	//			lcd.SetRegion(Lcd::Rect(0,0,100,15));
 	//			sprintf(c,"size:%d!",(int)bt.queue.size());
 	//			writer.WriteBuffer(c,10);
-	    	    ball.move();
+	    	    ball.move(myPlatform.getPosition().x, enemyPlatform.getPosition().x);
 	    	    ball.render();
+	    	    enemyPlatform.render();
+	    	    myPlatform.render();
+    		}
+    		if(lastTime % 75 == 0){
+	    	    if(mode == 'L'){
+	    	    	myPlatform.moveLeft();
+	    	    	myPlatform.render();
+	    	    }else if(mode == 'R'){
+	    	    	myPlatform.moveRight();
+	    	    	myPlatform.render();
+	    	    }
     		}
     	}
     }
